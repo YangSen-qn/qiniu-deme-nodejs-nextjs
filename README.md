@@ -33,20 +33,13 @@ QINIU_SECRET_KEY=你的七牛云SecretKey
 ### 安装依赖
 
 ```bash
-npm install
+yarn install
 ```
 
 ### 开发模式
 
 ```bash
-npm run dev
-```
-
-### 生产构建
-
-```bash
-npm run build
-npm run start
+yarn dev
 ```
 
 ## 注意事项
