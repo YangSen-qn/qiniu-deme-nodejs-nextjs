@@ -1,6 +1,8 @@
 'use client'
 
 import {useState} from 'react'
+// 移除七牛SDK导入
+// import * as qiniu from 'qiniu';
 
 interface FileUploaderProps {
     bucketName: string
@@ -25,27 +27,44 @@ export default function FileUploader({bucketName, onUploadComplete}: FileUploade
         setProgress(0)
 
         try {
-            // Get upload token
-            const tokenResponse = await fetch(`/api/upload?bucket=${bucketName}`)
-            const {token} = await tokenResponse.json()
+            // 1. 获取上传令牌
+            const tokenUrl = `/api/upload-token?bucket=${encodeURIComponent(bucketName)}&filename=${encodeURIComponent(file.name)}`;
+            const tokenResponse = await fetch(tokenUrl);
+            
+            if (!tokenResponse.ok) {
+                const errorData = await tokenResponse.json();
+                throw new Error(errorData.error || '获取上传令牌失败');
+            }
+            
+            const { token, uploadUrl, key } = await tokenResponse.json();
 
-            // Create form data
-            const formData = new FormData()
-            formData.append('token', token)
-            formData.append('file', file)
-            formData.append('key', file.name)
+            // 2. 创建FormData用于上传
+            const formData = new FormData();
+            formData.append('token', token);
+            if (key) formData.append('key', key);
+            formData.append('file', file);
 
-            // Upload to Qiniu
-            const uploadResponse = await fetch('http://upload.qiniup.com', {
+            // 3. 直接上传到七牛云服务器
+            setProgress(10); // 开始上传
+
+            const uploadResponse = await fetch(uploadUrl, {
                 method: 'POST',
-                body: formData,
-            })
+                body: formData
+            });
+
+            setProgress(90); // 快完成了
 
             if (!uploadResponse.ok) {
-                throw new Error('Upload failed')
+                throw new Error(`上传失败: ${uploadResponse.status} ${uploadResponse.statusText}`);
             }
 
-            setProgress(100)
+            const result = await uploadResponse.json();
+            
+            if (!result.key) {
+                throw new Error('上传失败：未收到有效响应');
+            }
+
+            setProgress(100);
             alert('File uploaded successfully!')
             onUploadComplete()
         } catch (error) {

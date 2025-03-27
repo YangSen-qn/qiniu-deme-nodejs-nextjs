@@ -1,68 +1,61 @@
-# Qiniu Storage Manager
+# 七牛云 Next.js 存储管理器
 
-A Next.js application for managing Qiniu storage buckets and files.
+这是一个使用 Next.js 和 七牛云 SDK 构建的云存储管理应用，提供了便捷的方式来管理七牛云对象存储服务中的文件。
 
-## Features
+## 功能特性
 
-- View all Qiniu buckets
-- List files in buckets
-- Get file information
-- Download files
-- Upload files to buckets
+- 浏览存储桶和文件
+- 支持文件夹层级导航和面包屑导航
+- 文件上传（支持拖放和多文件选择）
+- 文件下载（支持私有和公开存储桶）
+- 详细的调试面板
+- 支持自动获取存储桶域名
+- 响应式设计，适配各种设备
 
-## Technologies
+## 技术栈
 
-- Next.js 13+ (App Router)
-- TypeScript
-- Tailwind CSS
-- Qiniu SDK
+- **前端框架**：Next.js (基于 React)
+- **样式**：TailwindCSS
+- **云存储**：七牛云对象存储 (Qiniu Kodo)
+- **部署**：支持 Vercel、Netlify 等平台，或自行托管
 
-## Getting Started
+## 环境变量配置
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   yarn install
-   ```
+在项目根目录创建 `.env.local` 文件并配置以下环境变量：
 
-3. Configure environment variables:
-   - Copy `.env.local.example` to `.env.local`
-   - Add your Qiniu Access Key and Secret Key
+```
+QINIU_ACCESS_KEY=你的七牛云AccessKey
+QINIU_SECRET_KEY=你的七牛云SecretKey
+```
 
-4. Run the development server:
-   ```bash
-   yarn dev
-   ```
+## 开始使用
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Environment Variables
-
-The following environment variables are required:
+### 安装依赖
 
 ```bash
-QINIU_ACCESS_KEY=your_access_key_here
-QINIU_SECRET_KEY=your_secret_key_here
+npm install
 ```
 
-You can obtain these from your Qiniu account dashboard.
+### 开发模式
 
-## Available Scripts
-
-- `yarn dev` - Start development server
-- `yarn build` - Build for production
-- `yarn start` - Start production server
-- `yarn lint` - Run ESLint
-
-## Project Structure
-
-```
-src/
-  ├── app/              # Next.js app router pages
-  ├── components/       # React components
-  └── lib/             # Utility functions and services
+```bash
+npm run dev
 ```
 
-## License
+### 生产构建
 
-MIT
+```bash
+npm run build
+npm run start
+```
+
+## 注意事项
+
+- 本应用会自动获取存储桶域名，无需手动配置
+- 支持私有和公开存储桶的文件管理
+- 调试面板提供了详细的系统状态和连接信息
+- 下载链接会根据存储桶类型自动选择合适的方式生成
+
+## 安全提示
+
+请勿在客户端代码中暴露七牛云访问密钥，所有敏感操作应通过服务器端 API 进行。本项目已经采用 API 路由模式确保密钥安全。

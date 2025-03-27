@@ -1,34 +1,36 @@
-# 依赖包
-node_modules/
+# dependencies
+/node_modules
 /.pnp
 .pnp.js
-yarn.lock
-package-lock.json
 
-# 测试
+# testing
 /coverage
 
-# Next.js
+# next.js
 /.next/
 /out/
 
-# 生产环境
+# production
 /build
-/dist
 
-# 环境变量文件（包含敏感信息）
-.env
-.env*.local
-.env.production
-.env.development
-.env.test
+# misc
+.DS_Store
+*.pem
 
-# 调试日志
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-.pnpm-debug.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
 # 七牛云相关
 qiniu_temp/
@@ -36,7 +38,6 @@ qiniu_temp/
 qiniu_upload_token.json
 
 # Vercel
-.vercel
 .turbo
 
 # 编辑器相关
@@ -54,7 +55,6 @@ qiniu_upload_token.json
 *.sublime-*
 
 # 操作系统相关
-.DS_Store
 Thumbs.db
 desktop.ini
 
@@ -68,15 +68,6 @@ logs
 .tmp
 /tmp
 /temp
-
-# 类型脚本
-*.tsbuildinfo
-next-env.d.ts
-
-# PWA
-**/public/workbox-*.js
-**/public/sw.js
-**/public/service-worker.js
 
 # 站点地图
 **/public/sitemap*.xml

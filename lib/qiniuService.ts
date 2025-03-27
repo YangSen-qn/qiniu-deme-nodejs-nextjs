@@ -1,5 +1,6 @@
 import * as qiniu from 'qiniu';
 import {BucketDomainV3} from "qiniu/StorageResponseInterface";
+import {File} from "undici-types";
 
 // 定义七牛云API响应的接口
 interface QiniuResponse {
@@ -24,8 +25,6 @@ class QiniuService {
         const secretKey = process.env.QINIU_SECRET_KEY || '';
         this.mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
         this.config = new qiniu.conf.Config();
-        // Set specific region if needed
-        // this.config.zone = qiniu.zone.Zone_z0;
         this.bucketManager = new qiniu.rs.BucketManager(this.mac, this.config);
     }
 
@@ -180,6 +179,42 @@ class QiniuService {
             scope: key ? `${bucket}:${key}` : bucket,
         });
         return putPolicy.uploadToken(this.mac);
+    }
+
+    // 获取上传URL
+    getUploadUrl(bucket: string): string {
+        try {
+            // 默认使用华东区域上传域名
+            let uploadUrl = 'https://upload.qiniup.com';
+            
+            // 根据配置中的区域选择上传域名
+            if (this.config.zone) {
+                const zone = this.config.zone as any; // 使用any类型绕过类型检查
+                
+                // 尝试从配置中获取上传域名
+                if (typeof zone.getUpHosts === 'function') {
+                    const hosts = zone.getUpHosts(bucket);
+                    if (hosts && hosts.length > 0) {
+                        // 优先使用HTTPS
+                        const preferredHost = hosts.find((host: string) => host.startsWith('https://')) || hosts[0];
+                        uploadUrl = preferredHost;
+                    }
+                } else if (zone.srcUpHosts && zone.srcUpHosts.length > 0) {
+                    // 旧版API
+                    uploadUrl = zone.srcUpHosts[0];
+                    if (!uploadUrl.startsWith('http')) {
+                        uploadUrl = 'https://' + uploadUrl;
+                    }
+                }
+            }
+            
+            console.log(`为存储桶 ${bucket} 获取上传域名: ${uploadUrl}`);
+            return uploadUrl;
+        } catch (error) {
+            console.error(`获取上传域名失败:`, error);
+            // 出错时返回默认上传域名
+            return 'https://upload.qiniup.com';
+        }
     }
 
     // 获取公共下载URL
